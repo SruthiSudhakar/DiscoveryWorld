@@ -135,3 +135,7 @@ dmypy.json
 openai_key.txt
 
 .DS_Store
+
+output_dir/
+.claude/
+design_doc_repo_first.md

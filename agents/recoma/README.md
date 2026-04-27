@@ -101,7 +101,7 @@ for t in "Archaeology Dating" "Plant Nutrients" "Space Sick" "Combinatorial Chem
 #### Normal
 ```shell
 for t in "Archaeology Dating" "Plant Nutrients" "Space Sick" "Combinatorial Chemistry" "Reactor Lab" "Lost in Translation" "Proteomics" "It's (not)"; do
- export DIFF=Challenge
+ export DIFF=Normal
  export TASK=${t}
  export MAX_ENV_CALLS=1000
  export SEED=123 # Used for GPT
