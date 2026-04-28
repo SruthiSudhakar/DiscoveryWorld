@@ -37,3 +37,28 @@ export OUTPUT_DIR=output_dir/reproduce/react/${DIFF}_${MAX_ENV_CALLS}env_${MODEL
 python agents/recoma/run_recoma.py \
   --output_dir "${OUTPUT_DIR}" \
   --config agents/recoma/configs/react.jsonnet
+
+#ReAct easy Proteomics
+export DIFF=Easy
+export TASK="Proteomics"
+export MAX_ENV_CALLS=100
+export SEED=123
+export MODEL=gpt-4.1-mini-2025-04-14
+export OUTPUT_DIR=output_dir/reproduce/react/${DIFF}_${MAX_ENV_CALLS}env_${MODEL}_s${SEED}/${TASK// /_}
+
+python agents/recoma/run_recoma.py \
+  --output_dir "${OUTPUT_DIR}" \
+  --config agents/recoma/configs/react.jsonnet
+
+
+#P+E easy Proteomics
+export DIFF=Easy
+export TASK="Proteomics"
+export MAX_ENV_CALLS=100
+export SEED=123
+export MODEL=gpt-4.1-mini-2025-04-14
+export OUTPUT_DIR=output_dir/reproduce/plan_and_execute/${DIFF}_${MAX_ENV_CALLS}env_${MODEL}_s${SEED}/${TASK// /_}
+
+python agents/recoma/run_recoma.py \
+  --output_dir "${OUTPUT_DIR}" \
+  --config agents/recoma/configs/plan_and_execute.jsonnet
