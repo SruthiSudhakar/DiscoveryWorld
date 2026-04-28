@@ -36,12 +36,12 @@ Use --no-reconstruct to skip env-loading and show only the recoma trace's raw
 
 Fast Mode:
 python visualize_run.py \
-  "output_dir/reproduce/plan_and_execute/Easy_100env_gpt-4.1-mini-2025-04-14_s123/Proteomics/Proteomics_Easy_1_data.json" \
+  "output_dir/baselines/plan_and_execute/Easy_100env_gpt-4.1-mini-2025-04-14_s123/Proteomics/Proteomics_Easy_1_data.json" \
   --no-reconstruct
 
 Full Mode:
 python visualize_run.py \
-  "output_dir/reproduce/plan_and_execute/Easy_100env_gpt-4.1-mini-2025-04-14_s123/Proteomics/Proteomics_Easy_1_data.json"
+  "output_dir/baselines/plan_and_execute/Easy_100env_gpt-4.1-mini-2025-04-14_s123/Proteomics/Proteomics_Easy_1_data.json"
 
 """
 
@@ -273,7 +273,7 @@ class PromptReconstructor:
         self.additional_instructions = self.env.additionalActionDescriptionString()
 
     def render(self, observation: dict, input_str: str) -> str:
-        """Reproduce populate_template_dictionary using the recorded observation."""
+        """baselines populate_template_dictionary using the recorded observation."""
         ui = observation.get("ui", {}) or {}
         agent_loc = ui.get("agentLocation", {}) or {}
         dialog_box = ui.get("dialog_box", {}) or {}

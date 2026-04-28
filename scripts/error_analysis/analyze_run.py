@@ -13,11 +13,10 @@ the `task_knowledge` plugin package and is dispatched by task name.
 
 Usage:
 python scripts/error_analysis/analyze_run.py \
-  output_dir/reproduce/plan_and_execute/Easy_100env_gpt-4.1-mini-2025-04-14_s123/Proteomics
+  output_dir/baselines/plan_and_execute/Easy_100env_gpt-4.1-mini-2025-04-14_s123/Proteomics
 
 
-python scripts/error_analysis/analyze_run.py <run_dir>                                                                                           
-python scripts/error_analysis/summarize.py <run_dir>/error_analysis.json                                                                         
+python scripts/error_analysis/analyze_run.py /proj/vondrick3/sruthi/discovery/DiscoveryWorld/output_dir/baselines/plan_and_execute/Easy_100env_gpt-4.1-mini-2025-04-14_s123/Proteomics
 
 """
 from __future__ import annotations

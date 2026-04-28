@@ -1232,7 +1232,7 @@ class ArchaeologyDigEasy(Task):
     # Constructor
     def __init__(self, world, scoringInfo):
         taskDescription = "You are in archaeological dig store room on Planet X.  3 ancient artifacts have been found. "
-        taskDescription += "Your task is to date the artifacts with the radiocarbon meter.  Then, once completed, place the red flag directly beside (i.e. one square right/to the west) of the artifact with the oldest age."
+        taskDescription += "Your task is to date the artifacts with the radiocarbon meter.  Then, once completed, place the red flag directly beside (i.e. one square right/to the east) of the artifact with the oldest age."
 
         Task.__init__(self, "ArchaeologyDigTaskEasy", taskDescription, world, scoringInfo)
         self.score = 0

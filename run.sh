@@ -31,7 +31,7 @@ export TASK="Archaeology Dating"
 export MAX_ENV_CALLS=100
 export SEED=123
 export MODEL=gpt-4.1-mini-2025-04-14
-export OUTPUT_DIR=output_dir/reproduce/react/${DIFF}_${MAX_ENV_CALLS}env_${MODEL}_s${SEED}/${TASK// /_}
+export OUTPUT_DIR=output_dir/baselines/react/${DIFF}_${MAX_ENV_CALLS}env_${MODEL}_s${SEED}/${TASK// /_}
 
 # rm -rf "$OUTPUT_DIR"
 python agents/recoma/run_recoma.py \
@@ -44,7 +44,7 @@ export TASK="Proteomics"
 export MAX_ENV_CALLS=100
 export SEED=123
 export MODEL=gpt-4.1-mini-2025-04-14
-export OUTPUT_DIR=output_dir/reproduce/react/${DIFF}_${MAX_ENV_CALLS}env_${MODEL}_s${SEED}/${TASK// /_}
+export OUTPUT_DIR=output_dir/baselines/react/${DIFF}_${MAX_ENV_CALLS}env_${MODEL}_s${SEED}/${TASK// /_}
 
 python agents/recoma/run_recoma.py \
   --output_dir "${OUTPUT_DIR}" \
@@ -57,7 +57,7 @@ export TASK="Proteomics"
 export MAX_ENV_CALLS=100
 export SEED=123
 export MODEL=gpt-4.1-mini-2025-04-14
-export OUTPUT_DIR=output_dir/reproduce/plan_and_execute/${DIFF}_${MAX_ENV_CALLS}env_${MODEL}_s${SEED}/${TASK// /_}
+export OUTPUT_DIR=output_dir/baselines/plan_and_execute/${DIFF}_${MAX_ENV_CALLS}env_${MODEL}_s${SEED}/${TASK// /_}
 
 python agents/recoma/run_recoma.py \
   --output_dir "${OUTPUT_DIR}" \
