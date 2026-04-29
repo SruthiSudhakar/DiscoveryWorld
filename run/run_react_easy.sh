@@ -1,5 +1,5 @@
 #P+E easy all
-for t in "It's (not)"; do
+for t in "Archaeology Dating" "Combinatorial Chemistry"  "Proteomics" "Plant Nutrients" "Reactor Lab" "Space Sick" "Lost in Translation" "It's (not)"; do
  export DIFF=Easy
  export TASK=${t}
  export MAX_ENV_CALLS=100
@@ -8,5 +8,5 @@ for t in "It's (not)"; do
  export OUTPUT_DIR=output_dir/baselines_apr29/react/${DIFF}_${MAX_ENV_CALLS}env_${MODEL}_s${SEED}/${TASK// /_}
  python agents/recoma/run_recoma.py \
     --output_dir ${OUTPUT_DIR} \
-    --config agents/recoma/configs/react_one_seed.jsonnet
+    --config agents/recoma/configs/react.jsonnet
 done

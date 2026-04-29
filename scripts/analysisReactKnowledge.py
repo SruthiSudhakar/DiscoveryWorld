@@ -15,7 +15,7 @@ if __name__ == '__main__':
     #path = "/home/peter/github/discoveryworld/paper-results/react/output_dir_challenge_azure/"
     #path = "/home/peter/github/discoveryworld/paper-results/react/output_dir_normal/"
     #path = "/home/peter/github/discoveryworld/paper-results/react/output_dir_unit/"
-    path = "/proj/vondrick3/sruthi/discovery/DiscoveryWorld/output_dir/baselines_apr29/react/Easy_100env_gpt-4.1-mini-2025-04-14_s123/"
+    path = "/proj/vondrick3/sruthi/discovery/DiscoveryWorld/output_dir/baselines_apr29/react/Easy_100env_gpt-4o-2024-05-13_s123/"
 
     # Plan + Execute
 

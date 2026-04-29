@@ -332,6 +332,7 @@ class DiscoveryWorldAPI:
             response["errors"] = []
             response["success"] = True
         else:
+            #KEY CHANGE HERE! pushing errors through to the agent context. 
             if not isinstance(response["errors"], list):
                 response["errors"] = [response["errors"]] if response["errors"] else []
             if not response["errors"] and response["success"].message:
