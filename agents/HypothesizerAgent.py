@@ -67,6 +67,9 @@ modelCostsPerToken = {
 # MAXIMUM COST OF A RUN (in dollars)
 MAXIMUM_COST_DOLLARS = 0.0
 
+# GPT sampling seed (distinct from scenario seed). None means don't pass to OpenAI.
+GPT_SEED = None
+
 # consolidation step tracking
 CONSOLATATE_TRACKING = []
 
@@ -218,21 +221,23 @@ def OpenAIGetCompletionHelper(client, promptStr:str, promptImages:list, model=OP
 
     response = {}
 
+    # Build common kwargs; only pass seed if explicitly set (mirrors recoma's lite_llm seed wiring)
+    createKwargs = dict(
+        model=model,
+        messages=messages,
+        max_tokens=maxTokens,
+        temperature=temperature,
+    )
+    if GPT_SEED is not None:
+        createKwargs["seed"] = GPT_SEED
+
     # Get the response
     if (jsonResponse == False):
-        response = client.chat.completions.create(
-            model=model,
-            messages=messages,
-            max_tokens=maxTokens,
-            temperature=temperature,
-        )
+        response = client.chat.completions.create(**createKwargs)
     else:
         response = client.chat.completions.create(
-            model=model,
-            messages=messages,
-            max_tokens=maxTokens,
-            temperature=temperature,
             response_format={ "type": "json_object" },
+            **createKwargs,
         )
 
     # # Return the response
@@ -783,7 +788,7 @@ def mkInitialHypotheses():
 
 
 # This is the main entry point for the Hypothesizer Agent
-def GPT4VHypothesizerAgent(api, numSteps:int = 10, logFileSuffix:str = "", includeImages=True):
+def GPT4VHypothesizerAgent(api, numSteps:int = 10, logFileSuffix:str = "", includeImages=True, output_dir:str = "."):
     # Get the OpenAI key (stored in a file called "openai_key.txt")
     key = None
     if os.path.exists("openai_key.txt"):
@@ -909,13 +914,14 @@ def GPT4VHypothesizerAgent(api, numSteps:int = 10, logFileSuffix:str = "", inclu
 
 
             # Save to JSON
-            with open("output_observationHistory" + logFileSuffix + ".json", "w") as file:
+            os.makedirs(output_dir, exist_ok=True)
+            with open(os.path.join(output_dir, "output_observationHistory" + logFileSuffix + ".json"), "w") as file:
                 json.dump(observationHistory, file, indent=4, sort_keys=True)
-            with open("output_allhistory" + logFileSuffix + ".json", "w") as file:
+            with open(os.path.join(output_dir, "output_allhistory" + logFileSuffix + ".json"), "w") as file:
                 json.dump(allHistory, file, indent=4, sort_keys=True)
-            with open("output_costAnalysis" + logFileSuffix + ".json", "w") as file:
+            with open(os.path.join(output_dir, "output_costAnalysis" + logFileSuffix + ".json"), "w") as file:
                 json.dump(costAnalysis, file, indent=4, sort_keys=True)
-            with open("output_consolidatedKnowledge" + logFileSuffix + ".json", "w") as file:
+            with open(os.path.join(output_dir, "output_consolidatedKnowledge" + logFileSuffix + ".json"), "w") as file:
                 json.dump(CONSOLATATE_TRACKING, file, indent=4, sort_keys=False)
 
             # Check if the task has been completed
@@ -972,7 +978,7 @@ def GPT4VHypothesizerAgent(api, numSteps:int = 10, logFileSuffix:str = "", inclu
 #
 #   This is a main control function that initializes a given DiscoveryWorld environment, then runs the Hypothesizer Agent in that environment.
 #
-def runHypothesizerAgent(scenarioName:str, difficultyStr:str, seed:int=0, numSteps:int=10, includeImages=True, exportVideo:bool=False, threadId:int=1, debug:bool=False):
+def runHypothesizerAgent(scenarioName:str, difficultyStr:str, seed:int=0, numSteps:int=10, includeImages=True, exportVideo:bool=False, threadId:int=1, debug:bool=False, output_dir:str="."):
     # Load the scenario
     api = DiscoveryWorldAPI(threadID=threadId)
     success = api.loadScenario(scenarioName = scenarioName, difficultyStr = difficultyStr, randomSeed = seed, numUserAgents = 1)
@@ -986,7 +992,7 @@ def runHypothesizerAgent(scenarioName:str, difficultyStr:str, seed:int=0, numSte
     # Add date and time stamp
     import datetime
     logFileSuffix += "." + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-    GPT4VHypothesizerAgent(api, numSteps=numSteps, logFileSuffix=logFileSuffix, includeImages=includeImages)
+    GPT4VHypothesizerAgent(api, numSteps=numSteps, logFileSuffix=logFileSuffix, includeImages=includeImages, output_dir=output_dir)
     deltaTime = time.time() - startTime
     print("Elapsed time: " + str(deltaTime) + " seconds for " + str(numSteps) + " steps.")
     stepsPerSecond = numSteps / deltaTime
@@ -1005,7 +1011,8 @@ def runHypothesizerAgent(scenarioName:str, difficultyStr:str, seed:int=0, numSte
 
     # Create a video from the random agent
     if (exportVideo == True):
-        filenameOut = "output_hypothesizer_agent." + logFileSuffix + ".mp4"
+        os.makedirs(output_dir, exist_ok=True)
+        filenameOut = os.path.join(output_dir, "output_hypothesizer_agent." + logFileSuffix + ".mp4")
         api.createAgentVideo(agentIdx=0, filenameOut=filenameOut)
 
     out = {
@@ -1016,7 +1023,7 @@ def runHypothesizerAgent(scenarioName:str, difficultyStr:str, seed:int=0, numSte
 
 
     # Save log file
-    verboseLogDirectory = "logs/hypothesizer-" + logFileSuffix
+    verboseLogDirectory = os.path.join(output_dir, "logs", "hypothesizer-" + logFileSuffix)
     logInfo = {
         "scenarioName": scenarioName,
         "difficulty": difficultyStr,
@@ -1031,15 +1038,9 @@ def runHypothesizerAgent(scenarioName:str, difficultyStr:str, seed:int=0, numSte
         "verboseLogFilename": verboseLogDirectory + "/" + "out-hypothesizer-world" + logFileSuffix + ".json",
     }
     # Try to make the 'logs' directory, if it doesn't exist
-    try:
-        os.makedirs("logs")
-    except FileExistsError:
-        pass
+    os.makedirs(os.path.join(output_dir, "logs"), exist_ok=True)
     # Try to make the full directory
-    try:
-        os.makedirs(verboseLogDirectory)
-    except FileExistsError:
-        pass
+    os.makedirs(verboseLogDirectory, exist_ok=True)
 
     print("Saving world history...")
     try:
@@ -1068,7 +1069,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Play DiscoveryWorld using Hypothesizer Agent.")
     parser.add_argument('--scenario', choices=SCENARIO_NAMES, default=None)
     parser.add_argument('--difficulty', choices=SCENARIO_DIFFICULTY_OPTIONS.values(), default=None)
-    parser.add_argument('--seed', type=int, default=0)
+    parser.add_argument('--seed', type=int, default=0, help='Scenario/environment seed')
+    parser.add_argument('--gptSeed', type=int, default=int(os.environ.get("SEED", 0)),
+                        help='GPT sampling seed (passed to OpenAI). Defaults to env var SEED if set, else 0. '
+                             'Mirrors recoma/p+e where SEED env var is the GPT seed.')
+    parser.add_argument('--output_dir', type=str, default=os.environ.get("OUTPUT_DIR", "."),
+                        help='Directory to write all output files (logs, videos, JSON). '
+                             'Defaults to env var OUTPUT_DIR if set, else current dir.')
     parser.add_argument('--numSteps', type=int, default=100)
     ##parser.add_argument('--runall', action='store_true', help='Run all scenarios with random agent')      ## Disabled -- would be extremely expensive and time consuming to do this
     parser.add_argument('--video', action='store_true', help='Export video of agent actions')
@@ -1091,6 +1098,13 @@ if __name__ == "__main__":
         # CD: scenario number
         assert len(SCENARIO_NAMES) < 100, "ERROR: Too many scenarios.  Cannot generate unique thread ID."
         args.threadId = (diff2ID[args.difficulty] * 1000) + (args.seed * 100) + SCENARIO_NAMES.index(args.scenario)
+
+    # GPT sampling seed (mirrors recoma's lite_llm `seed` config)
+    GPT_SEED = args.gptSeed
+    print("Using GPT seed: " + str(GPT_SEED))
+
+    # Output directory
+    print("Using output_dir: " + args.output_dir)
 
     # Cost limit
     MAXIMUM_COST_DOLLARS = args.maxCostDollars
@@ -1129,7 +1143,7 @@ if __name__ == "__main__":
             for difficulty in validDifficulties:
                 for seed in validSeeds:
                     print("Running scenario: " + scenarioName + " with difficulty " + difficulty)
-                    result = runHypothesizerAgent(scenarioName=scenarioName, difficultyStr=difficulty, seed=seed, numSteps=args.numSteps, includeImages=includeImages, exportVideo=False, threadId=args.threadId, debug=False)
+                    result = runHypothesizerAgent(scenarioName=scenarioName, difficultyStr=difficulty, seed=seed, numSteps=args.numSteps, includeImages=includeImages, exportVideo=False, threadId=args.threadId, debug=False, output_dir=args.output_dir)
                     finalScore = result["finalNormalizedScore"]
                     stepsPerSecond.append(result["stepsPerSecond"])
 
@@ -1183,7 +1197,7 @@ if __name__ == "__main__":
             exit()
 
         exportVideo = args.video
-        finalScore = runHypothesizerAgent(scenarioName=args.scenario, difficultyStr=args.difficulty, seed=args.seed, numSteps=args.numSteps, includeImages=includeImages, exportVideo=exportVideo, threadId=args.threadId, debug=False)
+        finalScore = runHypothesizerAgent(scenarioName=args.scenario, difficultyStr=args.difficulty, seed=args.seed, numSteps=args.numSteps, includeImages=includeImages, exportVideo=exportVideo, threadId=args.threadId, debug=False, output_dir=args.output_dir)
 
     totalCost = TOTAL_COST_SENT + TOTAL_COST_RECEIVED
     print("Total cost: $" + str(round(totalCost, 2)))

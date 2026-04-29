@@ -332,6 +332,10 @@ class DiscoveryWorldAPI:
             response["errors"] = []
             response["success"] = True
         else:
+            if not isinstance(response["errors"], list):
+                response["errors"] = [response["errors"]] if response["errors"] else []
+            if not response["errors"] and response["success"].message:
+                response["errors"].append(response["success"].message)
             response["success"] = response["success"].success
 
 
