@@ -3,7 +3,7 @@ local output_dir = std.extVar('OUTPUT_DIR');
 local max_env_calls = std.parseInt(std.extVar('MAX_ENV_CALLS'));
 local task = std.extVar('TASK');
 local diff = std.extVar('DIFF');
-local generator_params = import "default_greedy_generator.libsonnet";
+local generator_params = import "default_local_vllm_generator.libsonnet";
 {
     "models": {
         "discoveryworld_init": {
@@ -17,11 +17,11 @@ local generator_params = import "default_greedy_generator.libsonnet";
             "observation_model": "environment",
             "add_roles": true,
             "max_output_length": 10000,
-            "max_history": -1  // Maximum number of history steps to show
+            "max_history": -1
         },
         "action": {
             "type": "discoveryworld_promptedlm",
-            "prompt_file": "agents/recoma/prompts/react_prompt.txt",
+            "prompt_file": "agents/recoma/prompts/react_prompt_oss.txt",
             "generator_params": generator_params + {"max_tokens": 400, "stop": ["```\n"]},
         },
         "environment": {
@@ -38,14 +38,14 @@ local generator_params = import "default_greedy_generator.libsonnet";
         },
         "stopping_conditions": [
             {"type": "max_env_calls", "max_env_calls": max_env_calls},
-            {"type": "max_llm_calls", "max_llm_calls": 1000}, // Not necessary; mainly there to catch any rogue usage
-            {"type": "max_llm_cost", "max_llm_cost": 50.00}  // Not necessary; mainly there to catch any rogue usage
+            {"type": "max_llm_calls", "max_llm_calls": 1000},
+            {"type": "max_llm_cost", "max_llm_cost": 50.00}
         ]
     },
     "reader": {
        "type": "discoveryworld_reader",
        "limit_prefixes": [task],
        "limit_difficulties": [diff],
-       "limit_seeds": [5],
+       "limit_seeds": [1, 2, 3, 4, 5],
     }
 }
