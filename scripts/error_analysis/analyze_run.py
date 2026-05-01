@@ -17,11 +17,11 @@ python scripts/error_analysis/analyze_run.py \
 python scripts/error_analysis/analyze_run.py /proj/vondrick3/sruthi/discovery/DiscoveryWorld/output_dir/baselines/plan_and_execute/Easy_100env_gpt-4.1-mini-2025-04-14_s123/Proteomics
 
 
-NEW=/proj/vondrick3/sruthi/discovery/DiscoveryWorld/output_dir/baselines_apr29/react/Easy_100env_gpt-4o-2024-05-13_s123
+NEW=/proj/vondrick3/sruthi/discovery/DiscoveryWorld/output_dir/baselines_apr29/react/Easy_100env_gpt-4.1-mini-2025-04-14_s123
 python scripts/error_analysis/analyze_run.py "$NEW"/*/
 python scripts/error_analysis/aggregate_and_plot.py \
     --root "$NEW" \
-    --label "ReAct gpt-4o-2024-05-13 Easy"
+    --label "ReAct gpt-4.1-mini-2025-04-14_s123 Easy"
 
 """
 from __future__ import annotations
